@@ -54,7 +54,6 @@ namespace OwnaAvalonia.ViewModels
             _inputFxprocessor = new FxProcessor() { IsEnabled = true };
 
             AudioEngineInitialize();
-
             
             _timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 80), DispatcherPriority.Normal, new EventHandler(_outputLevel));
             _timer.Start();
@@ -189,6 +188,7 @@ namespace OwnaAvalonia.ViewModels
             {
                 LogError($"Decoder not initialize!");
                 LogError($"Wrong file path: {OwnAudio.LibraryPath}");
+                LogWarning("The decoder will be miniaudio.")
             }
         }
 
@@ -229,7 +229,7 @@ namespace OwnaAvalonia.ViewModels
         }
 
         /// <summary>
-        /// Displays the time and the next song
+        /// Displays the output level
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -318,7 +318,7 @@ namespace OwnaAvalonia.ViewModels
 
             Delay _delay = new Delay
                 (
-                    time: 310,      // Delay time 370 ms
+                    time: 310,      // Delay time 310 ms
                     repeat: 0.4f,   // Rate of delayed signal feedback to the input 50%
                     mix: 0.15f,     // Delayed signal ratio in the mix 15%
                     sampleRate: SourceManager.OutputEngineOptions.SampleRate
