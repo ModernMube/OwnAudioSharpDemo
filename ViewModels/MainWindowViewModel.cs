@@ -54,7 +54,6 @@ namespace OwnaAvalonia.ViewModels
             _inputFxprocessor = new FxProcessor() { IsEnabled = true };
 
             AudioEngineInitialize();
-
             
             _timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 80), DispatcherPriority.Normal, new EventHandler(_outputLevel));
             _timer.Start();
@@ -189,6 +188,7 @@ namespace OwnaAvalonia.ViewModels
             {
                 LogError($"Decoder not initialize!");
                 LogError($"Wrong file path: {OwnAudio.LibraryPath}");
+                LogWarning("The decoder will be miniaudio.")
             }
         }
 
@@ -229,7 +229,7 @@ namespace OwnaAvalonia.ViewModels
         }
 
         /// <summary>
-        /// Displays the time and the next song
+        /// Displays the output level
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -253,7 +253,7 @@ namespace OwnaAvalonia.ViewModels
             /// </summary>
             Equalizer _equalizer = new Equalizer((float)SourceManager.OutputEngineOptions.SampleRate);
 
-            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 30 Hz Sub-bass - Slight emphasis on deep bass
+            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
             _equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
             _equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
             _equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
@@ -318,7 +318,7 @@ namespace OwnaAvalonia.ViewModels
 
             Delay _delay = new Delay
                 (
-                    time: 310,      // Delay time 370 ms
+                    time: 310,      // Delay time 310 ms
                     repeat: 0.4f,   // Rate of delayed signal feedback to the input 50%
                     mix: 0.15f,     // Delayed signal ratio in the mix 15%
                     sampleRate: SourceManager.OutputEngineOptions.SampleRate
