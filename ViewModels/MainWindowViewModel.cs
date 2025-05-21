@@ -188,7 +188,7 @@ namespace OwnaAvalonia.ViewModels
             {
                 LogError($"Decoder not initialize!");
                 LogError($"Wrong file path: {OwnAudio.LibraryPath}");
-                LogWarning("The decoder will be miniaudio.")
+                LogWarning("The decoder will be miniaudio.");
             }
         }
 

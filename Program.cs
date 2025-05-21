@@ -4,6 +4,7 @@ using System;
 
 using Ownaudio;
 using Ownaudio.Engines;
+using System.Diagnostics;
 
 namespace OwnaAvalonia
 {
@@ -21,10 +22,10 @@ namespace OwnaAvalonia
             {
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
-            finally
-            {
-                OwnAudio.Free();
-            }
+            catch(Exception ex) 
+            { 
+                Debug.WriteLine($"OwnAudio ERROR: {ex.Message}"); 
+            }            
         }
             
 
