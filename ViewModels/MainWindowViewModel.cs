@@ -19,8 +19,13 @@ using Ownaudio.Fx;
 
 namespace OwnaAvalonia.ViewModels
 {
+    /// <summary>
+    /// Main view model for the audio player application window
+    /// </summary>
     public class MainWindowViewModel : ViewModelBase, ILogger
     {
+        #region Private Fields
+
         private int _trackNumber = 0;
         private SourceManager? _player;
         private bool _isStopRequested = true;
@@ -30,41 +35,56 @@ namespace OwnaAvalonia.ViewModels
         private FxProcessor _inputFxprocessor;
         private DispatcherTimer _timer;
 
-        #region Reactive commands
-        public ReactiveCommand<Unit, Unit> AddFileCommand { get; }
-        public ReactiveCommand<Unit, Unit> RemoveFileCommand { get; }
-        public ReactiveCommand<Unit, Unit> ResetCommand { get; }
-        public ReactiveCommand<Unit, Unit> InputCommand { get; }
-        public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
-        public ReactiveCommand<Unit, Unit> StopCommand { get; }
-        public ReactiveCommand<Unit, Unit> SaveFilePathCommand { get; }
         #endregion
 
-        public MainWindowViewModel()
-        {
-            AddFileCommand = ReactiveCommand.Create(addFileCommand);
-            RemoveFileCommand = ReactiveCommand.Create(removeFileCommand);
-            ResetCommand = ReactiveCommand.Create(resetCommand);
-            InputCommand = ReactiveCommand.Create(inputCommand);
-            PlayPauseCommand = ReactiveCommand.Create(playPauseCommand);
-            StopCommand = ReactiveCommand.Create(stopCommand);
-            SaveFilePathCommand = ReactiveCommand.Create(saveFilePathCommand);
+        #region Reactive Commands
 
-            _Fxprocessor = new FxProcessor() { IsEnabled = IsFxEnabled };
-            _inputFxprocessor = new FxProcessor() { IsEnabled = true };
+        /// <summary>
+        /// Command to add audio files to the player
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> AddFileCommand { get; }
 
-            AudioEngineInitialize();
-            
-            _timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 80), DispatcherPriority.Normal, new EventHandler(_outputLevel));
-            _timer.Start();
-        }
+        /// <summary>
+        /// Command to remove the last added audio file
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> RemoveFileCommand { get; }
 
-        #region Binding propertyes
+        /// <summary>
+        /// Command to reset the player to initial state
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> ResetCommand { get; }
+
+        /// <summary>
+        /// Command to add microphone input source
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> InputCommand { get; }
+
+        /// <summary>
+        /// Command to toggle play/pause state
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> PlayPauseCommand { get; }
+
+        /// <summary>
+        /// Command to stop playback
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> StopCommand { get; }
+
+        /// <summary>
+        /// Command to select save file path
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> SaveFilePathCommand { get; }
+
+        #endregion
+
+        #region Bindable Properties
+
         private float _pitch = 0.0f;
+        /// <summary>
+        /// Gets or sets the pitch adjustment value for all audio sources
+        /// </summary>
         public float Pitch
         {
             get => _pitch;
-
             set
             {
                 this.RaiseAndSetIfChanged(ref _pitch, value);
@@ -76,10 +96,12 @@ namespace OwnaAvalonia.ViewModels
         }
 
         private float _tempo = 0.0f;
+        /// <summary>
+        /// Gets or sets the tempo adjustment value for all audio sources
+        /// </summary>
         public float Tempo
         {
             get => _tempo;
-
             set
             {
                 this.RaiseAndSetIfChanged(ref _tempo, value);
@@ -91,6 +113,9 @@ namespace OwnaAvalonia.ViewModels
         }
 
         private float _volume = 100.0f;
+        /// <summary>
+        /// Gets or sets the volume level (0-100)
+        /// </summary>
         public float Volume
         {
             get => _volume;
@@ -98,20 +123,50 @@ namespace OwnaAvalonia.ViewModels
             {
                 this.RaiseAndSetIfChanged(ref _volume, value);
                 if (_player is not null)
-                { _player.Volume = value / 100; }
+                { 
+                    _player.Volume = value / 100; 
+                }
             }
         }
 
         private TimeSpan _duration;
-        public TimeSpan Duration { get => _duration; set => this.RaiseAndSetIfChanged(ref _duration, value); }
+        /// <summary>
+        /// Gets or sets the total duration of the current audio
+        /// </summary>
+        public TimeSpan Duration 
+        { 
+            get => _duration; 
+            set => this.RaiseAndSetIfChanged(ref _duration, value); 
+        }
 
         private TimeSpan _position;
-        public TimeSpan Position { get => _position; set => this.RaiseAndSetIfChanged(ref _position, value); }
+        /// <summary>
+        /// Gets or sets the current playback position
+        /// </summary>
+        public TimeSpan Position 
+        { 
+            get => _position; 
+            set => this.RaiseAndSetIfChanged(ref _position, value); 
+        }
 
         private bool _isSaveFile;
-        public bool IsSaveFile { get => _isSaveFile; set { this.RaiseAndSetIfChanged(ref _isSaveFile, value); SaveFilePath = ""; } }
+        /// <summary>
+        /// Gets or sets whether to save the output to a file
+        /// </summary>
+        public bool IsSaveFile 
+        { 
+            get => _isSaveFile; 
+            set 
+            { 
+                this.RaiseAndSetIfChanged(ref _isSaveFile, value); 
+                SaveFilePath = ""; 
+            } 
+        }
 
         private bool _isFxEnabled = false;
+        /// <summary>
+        /// Gets or sets whether audio effects are enabled
+        /// </summary>
         public bool IsFxEnabled
         {
             get => _isFxEnabled;
@@ -123,16 +178,39 @@ namespace OwnaAvalonia.ViewModels
         }
 
         private string? _saveFilePath;
-        public string? SaveFilePath { get => _saveFilePath; set => this.RaiseAndSetIfChanged(ref _saveFilePath, value); }
+        /// <summary>
+        /// Gets or sets the path where the audio file will be saved
+        /// </summary>
+        public string? SaveFilePath 
+        { 
+            get => _saveFilePath; 
+            set => this.RaiseAndSetIfChanged(ref _saveFilePath, value); 
+        }
 
         private string? _playPauseText = "Play";
-        public string? PlayPauseText { get => _playPauseText; set => this.RaiseAndSetIfChanged(ref _playPauseText, value); }
+        /// <summary>
+        /// Gets or sets the text displayed on the play/pause button
+        /// </summary>
+        public string? PlayPauseText 
+        { 
+            get => _playPauseText; 
+            set => this.RaiseAndSetIfChanged(ref _playPauseText, value); 
+        }
 
+        /// <summary>
+        /// Gets the collection of loaded audio file names
+        /// </summary>
         public ObservableCollection<string> FileNames { get; } = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Gets the collection of log messages
+        /// </summary>
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
         private double _leftLevel;
+        /// <summary>
+        /// Gets or sets the left channel audio level (0-100)
+        /// </summary>
         public double LeftLevel
         {
             get => _leftLevel; 
@@ -140,12 +218,78 @@ namespace OwnaAvalonia.ViewModels
         }
 
         private double _rightLevel;
+        /// <summary>
+        /// Gets or sets the right channel audio level (0-100)
+        /// </summary>
         public double RightLevel
         {
             get => _rightLevel;
             set => this.RaiseAndSetIfChanged(ref _rightLevel, value);
         }
+
         #endregion
+
+        #region File Picker Options
+
+        /// <summary>
+        /// File picker options for saving audio files
+        /// </summary>
+        private FilePickerSaveOptions options = new FilePickerSaveOptions
+        {
+            Title = "Save Your Audio File",
+            SuggestedFileName = "OwnAudioSaveFile.wav",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("Wave File")
+                {
+                    Patterns = new[] { "*.wav" }
+                }
+            }
+        };
+
+        /// <summary>
+        /// Supported audio file types for opening
+        /// </summary>
+        private FilePickerFileType _audioFiles { get; } = new("Audio File")
+        {
+            Patterns = new[] { "*.wav", "*.flac", "*.mp3", "*.aac", "*.aiff", "*.mp4", "*.m4a", "*.ogg", "*.wma", "*.webm" },
+            AppleUniformTypeIdentifiers = new[] { "public.audio" },
+            MimeTypes = new[] { "audio/wav", "audio/flac", "audio/mpeg", "audio/aac", "audio/aiff", "audio/mp4", "audio/ogg", "audio/x-ms-wma", "audio/webm" }
+        };
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the MainWindowViewModel class
+        /// </summary>
+        public MainWindowViewModel()
+        {
+            // Initialize reactive commands
+            AddFileCommand = ReactiveCommand.Create(addFileCommand);
+            RemoveFileCommand = ReactiveCommand.Create(removeFileCommand);
+            ResetCommand = ReactiveCommand.Create(resetCommand);
+            InputCommand = ReactiveCommand.Create(inputCommand);
+            PlayPauseCommand = ReactiveCommand.Create(playPauseCommand);
+            StopCommand = ReactiveCommand.Create(stopCommand);
+            SaveFilePathCommand = ReactiveCommand.Create(saveFilePathCommand);
+
+            // Initialize effects processors
+            _Fxprocessor = new FxProcessor() { IsEnabled = IsFxEnabled };
+            _inputFxprocessor = new FxProcessor() { IsEnabled = true };
+
+            // Initialize audio engine
+            AudioEngineInitialize();
+            
+            // Start level monitoring timer
+            _timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 80), DispatcherPriority.Normal, new EventHandler(_outputLevel));
+            _timer.Start();
+        }
+
+        #endregion
+
+        #region Audio Engine Initialization
 
         /// <summary>
         /// Initializes the audio engine with default settings for input and output
@@ -186,15 +330,20 @@ namespace OwnaAvalonia.ViewModels
 
             if (!_isFFmpegInitialized)
             {
-                LogError($"Decoder not initialize!");
+                LogError($"Decoder not initialized!");
                 LogError($"Wrong file path: {OwnAudio.LibraryPath}");
                 LogWarning("The decoder will be miniaudio.");
             }
         }
 
+        #endregion
+
+        #region Logging Methods
+
         /// <summary>
         /// Logs an informational message to the application's log collection
         /// </summary>
+        /// <param name="message">The message to log</param>
         public void LogInfo(string message)
         {
             Dispatcher.UIThread.InvokeAsync(() => Logs.Add(new Log(message, Log.LogType.Info)));
@@ -203,6 +352,7 @@ namespace OwnaAvalonia.ViewModels
         /// <summary>
         /// Logs a warning message to the application's log collection
         /// </summary>
+        /// <param name="message">The warning message to log</param>
         public void LogWarning(string message)
         {
             Dispatcher.UIThread.InvokeAsync(() => Logs.Add(new Log(message, Log.LogType.Warning)));
@@ -211,28 +361,37 @@ namespace OwnaAvalonia.ViewModels
         /// <summary>
         /// Logs an error message to the application's log collection
         /// </summary>
+        /// <param name="message">The error message to log</param>
         public void LogError(string message)
         {
             Dispatcher.UIThread.InvokeAsync(() => Logs.Add(new Log(message, Log.LogType.Error)));
         }
 
+        #endregion
+
+        #region Public Methods
+
         /// <summary>
         /// Seeks to a specific position in the currently playing audio
         /// </summary>
+        /// <param name="ms">The position in milliseconds to seek to</param>
         public void Seek(double ms)
         {
             if (_player is not null && _player.IsLoaded)
             {
                 _player.Seek(TimeSpan.FromMilliseconds(ms));
             }
-
         }
 
+        #endregion
+
+        #region Private Methods
+
         /// <summary>
-        /// Displays the output level
+        /// Updates the output level meters
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
         private void _outputLevel(object? sender, EventArgs e)
         {
             if(_player is not null)
@@ -247,10 +406,8 @@ namespace OwnaAvalonia.ViewModels
         /// </summary>
         private void add_FXprocessor()
         {
-            /// <summary>
-            /// Adjusting the following EQ parameters will emphasize the highs, 
-            /// remove unnecessary lows and clean up the midrange
-            /// </summary>
+            // Create and configure equalizer with 10 bands
+            // Emphasizes highs, removes unnecessary lows, and cleans up midrange
             Equalizer _equalizer = new Equalizer((float)SourceManager.OutputEngineOptions.SampleRate);
 
             _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
@@ -264,30 +421,30 @@ namespace OwnaAvalonia.ViewModels
             _equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
             _equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
 
-            // Mastering compressor
+            // Create mastering compressor
             Compressor _compressor = new Compressor
             (
                 threshold: 0.5f,    // -6 dB
                 ratio: 4.0f,        // 4:1 compression ratio
                 attackTime: 100f,   // 100 ms
                 releaseTime: 200f,  // 200 ms
-                makeupGain: 1.0f,    // 0 dB
+                makeupGain: 1.0f,   // 0 dB
                 sampleRate: SourceManager.OutputEngineOptions.SampleRate
             );
 
-            // Mastering enhancer
+            // Create mastering enhancer
             Enhancer _enhancer = new Enhancer
             (
                 mix: 0.2f,          // 20% of the original signal is mixed back
                 cutFreq: 4000.0f,   // High-pass cutoff 4000 Hz
-                gain: 2.5f,         // Pre - saturation amplification  2.5x
+                gain: 2.5f,         // Pre-saturation amplification 2.5x
                 sampleRate: SourceManager.OutputEngineOptions.SampleRate
             );
 
-            //Dynamic amplification to ensure everything sounds the same volume
+            // Create dynamic amplifier for consistent volume levels
             DynamicAmp _dynamicAmp = new DynamicAmp(
-                targetLevel: -6.0f,           // Traget Level -6 Db
-                attackTimeSeconds: 0.2f,      // Slower attack for a more transparent sound
+                targetLevel: -6.0f,           // Target Level -6 dB
+                attackTimeSeconds: 0.2f,      // Slower attack for more transparent sound
                 releaseTimeSeconds: 0.8f,     // Longer release to avoid pumping
                 noiseThreshold: 0.0005f,      // Low noise threshold for handling quiet areas
                 maxGainValue: 0.85f,          // Maximum gain to avoid excessive noise
@@ -295,6 +452,7 @@ namespace OwnaAvalonia.ViewModels
                 rmsWindowSeconds: 0.5f        // Longer window for more stable RMS calculation
             );
 
+            // Add effects to the processor chain
             _Fxprocessor.AddFx(_equalizer);
             _Fxprocessor.AddFx(_enhancer);
             _Fxprocessor.AddFx(_compressor);
@@ -306,63 +464,45 @@ namespace OwnaAvalonia.ViewModels
         /// </summary>
         private void add_inputFxprocessor()
         {
+            // Create reverb effect for spatial enhancement
             Reverb _reverb = new Reverb
-                (
-                    size: 0.45f,        // Medium space, long reverb tail
-                    damp: 0.45f,        // Moderate high frequency damping
-                    wet: 0.25f,         // 25% effect - not too much reverb
-                    dry: 0.75f,         // 85% dry signal - vocal intelligibility is maintained
-                    stereoWidth: 0.8f,  // Good stereo space, but not too wide
-                    sampleRate: SourceManager.OutputEngineOptions.SampleRate
-                );
+            (
+                size: 0.45f,        // Medium space, long reverb tail
+                damp: 0.45f,        // Moderate high frequency damping
+                wet: 0.25f,         // 25% effect - not too much reverb
+                dry: 0.75f,         // 75% dry signal - vocal intelligibility is maintained
+                stereoWidth: 0.8f,  // Good stereo space, but not too wide
+                sampleRate: SourceManager.OutputEngineOptions.SampleRate
+            );
 
+            // Create delay effect for depth
             Delay _delay = new Delay
-                (
-                    time: 310,      // Delay time 310 ms
-                    repeat: 0.4f,   // Rate of delayed signal feedback to the input 50%
-                    mix: 0.15f,     // Delayed signal ratio in the mix 15%
-                    sampleRate: SourceManager.OutputEngineOptions.SampleRate
-                );
+            (
+                time: 310,      // Delay time 310 ms
+                repeat: 0.4f,   // Rate of delayed signal feedback to the input 40%
+                mix: 0.15f,     // Delayed signal ratio in the mix 15%
+                sampleRate: SourceManager.OutputEngineOptions.SampleRate
+            );
 
+            // Create vocal compressor for consistent levels
             Compressor _vocalCompressor = new Compressor
-                (
-                    threshold: 0.25f,   // -12 dB - adjusted to human voice average dynamic range
-                    ratio: 3.0f,        // 3:1 - natural, musical compression
-                    attackTime: 10f,    // 10 ms - fast enough to catch transients
-                    releaseTime: 100f,  // 100 ms - follows natural vocal decay
-                    makeupGain: 2.0f    // +6 dB - compensates for compression
-                );
+            (
+                threshold: 0.25f,   // -12 dB - adjusted to human voice average dynamic range
+                ratio: 3.0f,        // 3:1 - natural, musical compression
+                attackTime: 10f,    // 10 ms - fast enough to catch transients
+                releaseTime: 100f,  // 100 ms - follows natural vocal decay
+                makeupGain: 2.0f    // +6 dB - compensates for compression
+            );
 
+            // Add effects to the input processor chain
             _inputFxprocessor.AddFx(_reverb);
             _inputFxprocessor.AddFx(_delay);
             _inputFxprocessor.AddFx(_vocalCompressor);
         }
 
-        /// <summary>
-        /// Sets the type of audio files that can be opened.
-        /// </summary>
-        private FilePickerSaveOptions options = new FilePickerSaveOptions
-        {
-            Title = "Save Your Audio File",
-            SuggestedFileName = "OwnAudioSaveFile.wav",
-            FileTypeChoices = new[]
-            {
-                new FilePickerFileType("Wave File")
-                {
-                    Patterns = new[] { "*.wav" }
-                }
-            }
-        };
+        #endregion
 
-        /// <summary>
-        /// Sets the type of audio files that can be opened.
-        /// </summary>
-        private FilePickerFileType _audioFiles { get; } = new("Audio File")
-        {
-            Patterns = new[] { "*.wav", "*.flac", "*.mp3", "*.aac", "*.aiff", "*.mp4", "*.m4a", "*.ogg", "*.wma", "*.webm" },
-            AppleUniformTypeIdentifiers = new[] { "public.audio" },
-            MimeTypes = new[] { "audio/wav", "audio/flac", "audio/mpeg", "audio/aac", "audio/aiff", "audio/mp4", "audio/ogg", "audio/x-ms-wma", "audio/webm" }
-        };
+        #region Command Handlers
 
         /// <summary>
         /// Handles the file selection process to add audio tracks to the player
@@ -394,7 +534,7 @@ namespace OwnaAvalonia.ViewModels
                             if(_player is not null)
                                 MainWindow.Instance.waveformDisplay.SetAudioData(_player.Sources[_sourceOutputId + 1].GetFloatAudioData(TimeSpan.Zero));
 
-                            FileNames.Add(String.Format("track{0}:  {1}", (_trackNumber++).ToString(), referenceFile));
+                            FileNames.Add(String.Format("track{0}: {1}", (_trackNumber++).ToString(), referenceFile));
                             _sourceOutputId++;
                         }
                     }
@@ -405,6 +545,7 @@ namespace OwnaAvalonia.ViewModels
                         Position = TimeSpan.Zero;
                     }
 
+                    // Reset pitch and tempo for all sources
                     for (int i = 0; i < _player?.Sources.Count; i++)
                     {
                         _player.SetTempo(i, 0);
@@ -424,7 +565,6 @@ namespace OwnaAvalonia.ViewModels
                 if (FileNames[FileNames.Count - 1].Contains("input source"))
                 {
                     _player?.RemoveInputSource();
-
                 }
                 else
                 {
@@ -435,7 +575,6 @@ namespace OwnaAvalonia.ViewModels
                 FileNames.RemoveAt(FileNames.Count - 1);
                 _trackNumber--;
             }
-
         }
 
         /// <summary>
@@ -446,7 +585,6 @@ namespace OwnaAvalonia.ViewModels
             if (_isStopRequested && _isFFmpegInitialized)
             {
                 _player?.AddInputSource(0.3f);
-
                 FileNames.Add("Add new input source");
             }
         }
@@ -479,9 +617,7 @@ namespace OwnaAvalonia.ViewModels
             {
                 _player.IsWriteData = IsSaveFile;
 
-                /***************************
-                This code handles the input.
-                ***************************/
+                // Handle input source if recording is enabled
                 if (_player.IsRecorded)
                 {
                     if (_player.AddInputSource(inputVolume: 1.0f).Result)
@@ -490,16 +626,20 @@ namespace OwnaAvalonia.ViewModels
                         add_inputFxprocessor();
                     }
                 }
-
             }
 
+            // Toggle play/pause state
             if (_player?.State is SourceState.Paused or SourceState.Idle)
+            {
                 if (IsSaveFile && SaveFilePath is not null)
                     _player.Play(SaveFilePath, 16);
                 else
                     _player.Play();
+            }
             else
+            {
                 _player?.Pause();
+            }
         }
 
         /// <summary>
@@ -536,9 +676,15 @@ namespace OwnaAvalonia.ViewModels
             }
         }
 
+        #endregion
+
+        #region Event Handlers
+
         /// <summary>
         /// Handles UI updates when the player state changes between playing, paused, etc.
         /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
         private void OnStateChanged(object? sender, EventArgs e)
         {
             if (_player is not null)
@@ -548,13 +694,14 @@ namespace OwnaAvalonia.ViewModels
         /// <summary>
         /// Handles position updates from the audio player to keep the UI in sync
         /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
         private void OnPositionChanged(object? sender, EventArgs e)
         {
             if (_player is not null && _player.IsSeeking)
             {
                 return;
             }
-
 
             if (_player is not null && ((_player.Position - Position).TotalSeconds > 1 || Position > _player.Position))
             {
@@ -566,5 +713,7 @@ namespace OwnaAvalonia.ViewModels
             if (!_isStopRequested && Position == TimeSpan.Zero)
                 _isStopRequested = true;
         }
+
+        #endregion
     }
 }
