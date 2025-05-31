@@ -101,6 +101,21 @@ namespace OwnaAvalonia.ViewModels
                 { _player.Volume = value / 100; }
             }
         }
+        
+        private bool _isMicrophone = true;
+        public bool IsMicrophone
+        {
+            get => _isMicrophone;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isMicrophone, value);
+                if (_player is not null && _player.SourcesInput.Count > 0)
+                {
+                    _player.SourcesInput[0].CustomSampleProcessor.IsEnabled = IsMicrophone;
+                    _player.SourcesInput[0].Volume = value ? 1.0f : 0.0f;
+                }
+            }
+        }
 
         private TimeSpan _duration;
         public TimeSpan Duration { get => _duration; set => this.RaiseAndSetIfChanged(ref _duration, value); }
@@ -332,7 +347,7 @@ namespace OwnaAvalonia.ViewModels
                     releaseTime: 100f,  // 100 ms - follows natural vocal decay
                     makeupGain: 2.0f    // +6 dB - compensates for compression
                 );
-
+            
             _inputFxprocessor.AddFx(_reverb);
             _inputFxprocessor.AddFx(_delay);
             _inputFxprocessor.AddFx(_vocalCompressor);
@@ -486,7 +501,7 @@ namespace OwnaAvalonia.ViewModels
                 {
                     if (_player.AddInputSource(inputVolume: 1.0f).Result)
                     {
-                        SourceManager.Instance.SourcesInput[0].CustomSampleProcessor = _inputFxprocessor;
+                        _player.SourcesInput[0].CustomSampleProcessor = _inputFxprocessor;
                         add_inputFxprocessor();
                     }
                 }
@@ -500,6 +515,13 @@ namespace OwnaAvalonia.ViewModels
                     _player.Play();
             else
                 _player?.Pause();
+
+            if (_player is not null && _player.SourcesInput.Count > 0)
+            {
+                _player.SourcesInput[0].CustomSampleProcessor.IsEnabled = IsMicrophone;
+                _player.SourcesInput[0].Volume = IsMicrophone ? 1.0f : 0.0f;
+                _inputFxprocessor.ResetFX();
+            }
         }
 
         /// <summary>

@@ -61,6 +61,7 @@
                     Command="{Binding ResetCommand}"/>
             <ToggleButton Content="FX" 
                     IsChecked="{Binding IsFxEnabled, Mode=TwoWay}" Margin="2"/>
+            <ToggleSwitch Content="Mic." IsChecked="{Binding IsMicrophone, Mode=TwoWay}"/>
         </StackPanel>
 
         <!--Progress, PLay, Stop-->

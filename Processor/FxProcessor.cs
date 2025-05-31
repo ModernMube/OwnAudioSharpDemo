@@ -23,6 +23,19 @@ namespace OwnaAvalonia.Processor
         {
            _sampleProcessor.Add(fx);
         }
+
+        public void ResetFX()
+        {
+            if (_sampleProcessor.Count > 0)
+            {
+                foreach (SampleProcessorBase fx in _sampleProcessor)
+                {
+                    if (fx.GetType() == typeof(Ownaudio.Fx.Reverb))
+                        ((Ownaudio.Fx.Reverb)fx).Reset();
+                }
+            }
+        }
+        
         /// <summary>
         /// Processes the audio samples by applying all registered effect processors in sequence.
         /// </summary>
