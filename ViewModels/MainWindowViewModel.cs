@@ -497,7 +497,7 @@ namespace OwnaAvalonia.ViewModels
         {
             Reverb _reverb = new Reverb
                 (
-                    size: 0.45f,        // Medium space, long reverb tail
+                    size: 0.25f,        // Medium space, long reverb tail
                     damp: 0.45f,        // Moderate high frequency damping
                     wet: 0.25f,         // 25% effect - not too much reverb
                     dry: 0.75f,         // 85% dry signal - vocal intelligibility is maintained
@@ -699,7 +699,7 @@ namespace OwnaAvalonia.ViewModels
             {
                 _player.SourcesInput[0].CustomSampleProcessor.IsEnabled = IsMicrophone;
                 _player.SourcesInput[0].Volume = IsMicrophone ? 1.0f : 0.0f;
-                _inputFxprocessor.ResetFX();
+                _inputFxprocessor.Reset();
             }
         }
 

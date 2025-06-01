@@ -24,14 +24,13 @@ namespace OwnaAvalonia.Processor
            _sampleProcessor.Add(fx);
         }
 
-        public void ResetFX()
+        public override void Reset()
         {
             if (_sampleProcessor.Count > 0)
             {
                 foreach (SampleProcessorBase fx in _sampleProcessor)
                 {
-                    if (fx.GetType() == typeof(Ownaudio.Fx.Reverb))
-                        ((Ownaudio.Fx.Reverb)fx).Reset();
+                    fx.Reset();
                 }
             }
         }
