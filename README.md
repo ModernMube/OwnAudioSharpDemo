@@ -91,6 +91,5 @@ The main features handled by `MainWindowViewModel` include:
 ## Prerequisites
 
 * **.NET SDK:** To build and run the Avalonia application.
-* **FFmpeg:** `OwnAudioSharp` relies on FFmpeg for decoding various audio formats. Ensure that FFmpeg binaries are accessible to the application (e.g., in the application's directory or in a location included in the system's PATH environment variable). The application logs an error if FFmpeg is not initialized.
 
 ---
