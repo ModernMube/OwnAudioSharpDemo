@@ -353,7 +353,7 @@ namespace OwnaAvalonia.ViewModels
 
             SourceManager.OutputEngineOptions = _audioEngineOptions;
             SourceManager.InputEngineOptions = _audioInputOptions;
-            SourceManager.EngineFramesPerBuffer = 512;
+            SourceManager.EngineFramesPerBuffer = 256;
 
             _player = SourceManager.Instance;
 
