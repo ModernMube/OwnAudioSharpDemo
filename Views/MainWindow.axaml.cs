@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 
 using OwnaAvalonia.ViewModels;
+using System;
+using System.Diagnostics;
 
 namespace OwnaAvalonia.Views
 {

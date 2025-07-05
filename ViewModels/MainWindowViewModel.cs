@@ -204,12 +204,14 @@ namespace OwnaAvalonia.ViewModels
             get => _isMicrophone;
             set
             {
+#nullable disable
                 this.RaiseAndSetIfChanged(ref _isMicrophone, value);
                 if (_player is not null && _player.SourcesInput.Count > 0)
                 {
                     _player.SourcesInput[0].CustomSampleProcessor.IsEnabled = IsMicrophone;
                     _player.SourcesInput[0].Volume = value ? 1.0f : 0.0f;
                 }
+#nullable restore
             }
         }
 
@@ -353,7 +355,7 @@ namespace OwnaAvalonia.ViewModels
 
             SourceManager.OutputEngineOptions = _audioEngineOptions;
             SourceManager.InputEngineOptions = _audioInputOptions;
-            SourceManager.EngineFramesPerBuffer = 256;
+            SourceManager.EngineFramesPerBuffer = 1024;
 
             _player = SourceManager.Instance;
 
@@ -483,6 +485,7 @@ namespace OwnaAvalonia.ViewModels
                 rmsWindowSeconds: 0.5f        // Longer window for more stable RMS calculation
             );
 
+            //_Fxprocessor.AddFx(_equalizer);
             _Fxprocessor.AddFx(_equalizer);
             _Fxprocessor.AddFx(_enhancer);
             _Fxprocessor.AddFx(_compressor);
@@ -582,7 +585,12 @@ namespace OwnaAvalonia.ViewModels
                             }
 
                             if (_player is not null)
-                                MainWindow.Instance.waveformDisplay.SetAudioData(_player.Sources[_sourceOutputId + 1].GetFloatAudioData(TimeSpan.Zero));
+                            {
+                                if(OwnAudio.IsFFmpegInitialized)
+                                    MainWindow.Instance.waveformDisplay.LoadFromAudioFile(referenceFile, preferFFmpeg: true);
+                                else
+                                    MainWindow.Instance.waveformDisplay.LoadFromAudioFile(referenceFile, preferFFmpeg: false);
+                            }
 
                             FileNames.Add(String.Format("track{0}:  {1}", (_trackNumber++).ToString(), referenceFile));
                             _sourceOutputId++;
@@ -697,9 +705,11 @@ namespace OwnaAvalonia.ViewModels
 
             if (_player is not null && _player.SourcesInput.Count > 0)
             {
+#nullable disable
                 _player.SourcesInput[0].CustomSampleProcessor.IsEnabled = IsMicrophone;
                 _player.SourcesInput[0].Volume = IsMicrophone ? 1.0f : 0.0f;
                 _inputFxprocessor.Reset();
+#nullable restore
             }
         }
 

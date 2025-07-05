@@ -13,7 +13,7 @@ namespace OwnaAvalonia.Processor
     /// </remarks>
     public class FxProcessor : SampleProcessorBase
     {            
-        private List<SampleProcessorBase>  _sampleProcessor = new List<SampleProcessorBase> ();
+        private List<SampleProcessorBase>  _sampleProcessor = new List<SampleProcessorBase>();
 
         /// <summary>
         /// Adds an effect processor to the processing chain.
@@ -24,6 +24,9 @@ namespace OwnaAvalonia.Processor
            _sampleProcessor.Add(fx);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Reset()
         {
             if (_sampleProcessor.Count > 0)
