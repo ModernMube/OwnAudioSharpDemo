@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Reactive;
-using ReactiveUI;
-
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-
-using Ownaudio;
-using Ownaudio.Sources;
-using Ownaudio.Engines;
-using Ownaudio.Common;
-
 using OwnaAvalonia.Models;
-using OwnaAvalonia.Views;
 using OwnaAvalonia.Processor;
+using OwnaAvalonia.Views;
+using Ownaudio;
+using Ownaudio.Common;
+using Ownaudio.Engines;
 using Ownaudio.Fx;
+using Ownaudio.Sources;
+using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reactive;
 
 namespace OwnaAvalonia.ViewModels
 {
@@ -443,29 +440,17 @@ namespace OwnaAvalonia.ViewModels
             /// </summary>
             Equalizer _equalizer = new Equalizer((float)SourceManager.OutputEngineOptions.SampleRate);
 
-            // Mastering EQ settings
-            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
-            _equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -3.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
+            //Mastering EQ settings
+            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 0.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
+            _equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
             _equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
-            _equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -4.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
-            _equalizer.SetBandGain(band: 4, frequency: 500, q: 1.4f, gainDB: -3.5f);  // 500 Hz Middle - Small cut for clearer vocals
-            _equalizer.SetBandGain(band: 5, frequency: 2000, q: 1.0f, gainDB: -2.5f); // 2 kHz Upper mids - Slight emphasis for vocal presence
+            _equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
+            _equalizer.SetBandGain(band: 4, frequency: 500, q: 1.4f, gainDB: -1.5f);  // 500 Hz Middle - Small cut for clearer vocals
+            _equalizer.SetBandGain(band: 5, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Upper mids - Slight emphasis for vocal presence
             _equalizer.SetBandGain(band: 6, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence - Emphasis for details
             _equalizer.SetBandGain(band: 7, frequency: 6000, q: 1.0f, gainDB: 0.3f);  // 6 kHz High mids - Adding airiness
             _equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
             _equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
-
-            //Concert hall mastering EQ settings
-            //_equalizer.SetBandGain(0, 60f, 0.8f, 0.5f);  // Band 0: Sub-bass boost (60Hz) - concert hall rumble             
-            //_equalizer.SetBandGain(1, 120f, 1.2f, 1.0f);  // Band 1: Bass punch (120Hz) - kick drum presence                                                                                                                          
-            //_equalizer.SetBandGain(2, 250f, 1.0f, -1.0f);  // Band 2: Low-mid warmth (250Hz) - body and fullness             
-            //_equalizer.SetBandGain(3, 800f, 1.5f, -5.5f);  // Band 3: Mid cut (800Hz) - reduce boxy sound              
-            //_equalizer.SetBandGain(4, 1500f, 1.8f, -2.5f);  // Band 4: Upper mid presence (1.5kHz) - vocal clarity             
-            //_equalizer.SetBandGain(5, 3000f, 2.0f, 0.0f);  // Band 5: Presence boost (3kHz) - instrument definition             
-            //_equalizer.SetBandGain(6, 6000f, 1.5f, -1.5f);  // Band 6: High-mid sparkle (6kHz) - cymbal shimmer               
-            //_equalizer.SetBandGain(7, 10000f, 1.2f, 1.0f); // Band 7: Treble air (10kHz) - open sound                
-            //_equalizer.SetBandGain(8, 15000f, 0.9f, -1.0f); // Band 8: High treble (15kHz) - concert hall ambience             
-            //_equalizer.SetBandGain(9, 18000f, 0.7f, -2.5f);  // Band 9: Ultra-high (18kHz) - spatial enhancement
 
             // Mastering compressor
             Compressor _compressor = new Compressor
@@ -500,12 +485,12 @@ namespace OwnaAvalonia.ViewModels
 
             Limiter _limiter = new Limiter
             (
-                threshold: -1.0f,             // -3.0 dB threshold to prevent clipping
-                ceiling: -0.1f,              // -0.1 dB ceiling to ensure no clipping
+                threshold: -3.0f,             // -3.0 dB threshold to prevent clipping
+                ceiling: -0.5f,              // -0.5 dB ceiling to ensure no clipping
                 release: 50f,                 // 20 ms release time for smooth recovery
                 sampleRate: SourceManager.OutputEngineOptions.SampleRate
             );
-            
+
             _Fxprocessor.AddFx(_equalizer);
             _Fxprocessor.AddFx(_enhancer);
             _Fxprocessor.AddFx(_compressor);
