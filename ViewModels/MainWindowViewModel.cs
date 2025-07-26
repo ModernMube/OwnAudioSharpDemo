@@ -441,7 +441,18 @@ namespace OwnaAvalonia.ViewModels
             Equalizer _equalizer = new Equalizer((float)SourceManager.OutputEngineOptions.SampleRate);
 
             //Mastering EQ settings
-            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 0.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
+            //_equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 0.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
+            //_equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
+            //_equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
+            //_equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
+            //_equalizer.SetBandGain(band: 4, frequency: 500, q: 1.4f, gainDB: -1.5f);  // 500 Hz Middle - Small cut for clearer vocals
+            //_equalizer.SetBandGain(band: 5, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Upper mids - Slight emphasis for vocal presence
+            //_equalizer.SetBandGain(band: 6, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence - Emphasis for details
+            //_equalizer.SetBandGain(band: 7, frequency: 6000, q: 1.0f, gainDB: 0.3f);  // 6 kHz High mids - Adding airiness
+            //_equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
+            //_equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
+
+            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
             _equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
             _equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
             _equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
@@ -451,6 +462,7 @@ namespace OwnaAvalonia.ViewModels
             _equalizer.SetBandGain(band: 7, frequency: 6000, q: 1.0f, gainDB: 0.3f);  // 6 kHz High mids - Adding airiness
             _equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
             _equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
+
 
             // Mastering compressor
             Compressor _compressor = new Compressor
@@ -474,20 +486,20 @@ namespace OwnaAvalonia.ViewModels
 
             //Dynamic amplification to ensure everything sounds the same volume
             DynamicAmp _dynamicAmp = new DynamicAmp(
-                targetLevel: -6.0f,           // Target Level -6 Db
+                targetLevel: -8.0f,           // Target Level -8 Db
                 attackTimeSeconds: 0.2f,      // Slower attack for a more transparent sound
                 releaseTimeSeconds: 0.8f,     // Longer release to avoid pumping
                 noiseThreshold: 0.0005f,      // Low noise threshold for handling quiet areas
-                maxGainValue: 0.85f,          // Maximum gain to avoid excessive noise
+                maxGainValue: 0.75f,          // Maximum gain to avoid excessive noise
                 sampleRateHz: SourceManager.OutputEngineOptions.SampleRate,
                 rmsWindowSeconds: 0.5f        // Longer window for more stable RMS calculation
             );
 
             Limiter _limiter = new Limiter
             (
-                threshold: -3.0f,             // -3.0 dB threshold to prevent clipping
-                ceiling: -0.5f,              // -0.5 dB ceiling to ensure no clipping
-                release: 50f,                 // 20 ms release time for smooth recovery
+                threshold: -1.0f,             // -3.0 dB threshold to prevent clipping
+                ceiling: -0.1f,              // -0.5 dB ceiling to ensure no clipping
+                release: 20f,                 // 20 ms release time for smooth recovery
                 sampleRate: SourceManager.OutputEngineOptions.SampleRate
             );
 
