@@ -84,7 +84,7 @@
             <Visual:WaveAvaloniaDisplay x:Name="waveformDisplay"
                                   WaveformBrush="DodgerBlue"
                                   PlaybackPositionBrush="Red"
-                                  VerticalScale="1.0"
+                                  VerticalScale="1.0"								 
                                   DisplayStyle="MinMax"/>
         </Grid>
 
