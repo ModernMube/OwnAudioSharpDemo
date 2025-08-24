@@ -368,9 +368,9 @@ namespace OwnaAvalonia.ViewModels
 
             if (!_isFFmpegInitialized)
             {
-                LogError($"Decoder not initialize!");
-                LogError($"Wrong file path: {OwnAudio.LibraryPath}");
-                LogWarning("The decoder will be miniaudio.");
+                LogError($"Portaudio not initialize!");
+                LogError($"FFmpeg not found: {OwnAudio.LibraryPath}");
+                LogWarning("Audio engine and decoder: MINIAUDIO.");
             }
         }
 
@@ -438,7 +438,7 @@ namespace OwnaAvalonia.ViewModels
             /// Adjusting the following EQ parameters will emphasize the highs, 
             /// remove unnecessary lows and clean up the midrange
             /// </summary>
-            Equalizer _equalizer = new Equalizer((float)SourceManager.OutputEngineOptions.SampleRate);
+            Equalizer _equalizer = new Equalizer(sampleRate: SourceManager.OutputEngineOptions.SampleRate);
 
             _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
             _equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
@@ -451,33 +451,31 @@ namespace OwnaAvalonia.ViewModels
             _equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
             _equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
 
-            AutoGain _autoGain = new AutoGain();
-            _autoGain.SetPreset(AutoGainPreset.Live);
+            AutoGain _autoGain = new AutoGain(AutoGainPreset.Music);
+
+            DynamicAmp _dynamicGain = new DynamicAmp(DynamicAmpPreset.Live);
+            _dynamicGain.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
 
             // Mastering compressor
-            Compressor _compressor = new Compressor();
+            Compressor _compressor = new Compressor(CompressorPreset.MasteringLimiter);
             _compressor.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
-            _compressor.SetPreset(CompressorPreset.MasteringLimiter);
 
             // Mastering enhancer
-            Enhancer _enhancer = new Enhancer();
-            _enhancer.SetParameters(sampleRate: SourceManager.OutputEngineOptions.SampleRate);
-            _enhancer.SetPreset(EnhancerPreset.MixCutter);             
+            Enhancer _enhancer = new Enhancer(EnhancerPreset.RockEdge);
+            _enhancer.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
 
             //Dynamic amplification to ensure everything sounds the same volume (optimized for music mastering)
-            DynamicAmp _dynamicAmp = new DynamicAmp();
-            _dynamicAmp.SetSampleRate(SourceManager.OutputEngineOptions.SampleRate);
-            _dynamicAmp.SetPreset(DynamicAmpPreset.Music);
+            DynamicAmp _dynamicAmp = new DynamicAmp(DynamicAmpPreset.Music);
+            _dynamicAmp.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
+            _dynamicAmp.TargetLevel = -12.0f;
 
-            Limiter _limiter = new Limiter(SourceManager.OutputEngineOptions.SampleRate);
-            _limiter.SetPreset(LimiterPreset.Mastering);
+            Limiter _limiter = new Limiter(SourceManager.OutputEngineOptions.SampleRate, LimiterPreset.Live);
 
-            //_Fxprocessor.AddFx(_autoGain);
+            _Fxprocessor.AddFx(_dynamicGain);
             _Fxprocessor.AddFx(_equalizer);
             _Fxprocessor.AddFx(_enhancer);
-            _Fxprocessor.AddFx(_dynamicAmp);
             _Fxprocessor.AddFx(_compressor);
-            //_Fxprocessor.AddFx(_limiter);
+            _Fxprocessor.AddFx(_dynamicAmp);
 
         }
 
@@ -720,7 +718,7 @@ namespace OwnaAvalonia.ViewModels
             if (!_isStopRequested)
                 _player?.Stop();
 
-            if (_player is not null && _player.Reset())
+            if (_player is not null && _player.Reset(true))
             {
                 FileNames.Clear();
                 Logs.Clear();

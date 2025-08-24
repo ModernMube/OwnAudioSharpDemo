@@ -22,7 +22,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.4" />
     <PackageReference Include="Material.Avalonia" Version="3.13.0" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="OwnAudioSharp" Version="0.94.56" />
+    <PackageReference Include="OwnAudioSharp" Version="1.0.0" />
     <PackageReference Include="SukiUI" Version="6.0.3" />
   </ItemGroup>
 </Project>
