@@ -438,23 +438,62 @@ namespace OwnaAvalonia.ViewModels
             /// Adjusting the following EQ parameters will emphasize the highs, 
             /// remove unnecessary lows and clean up the midrange
             /// </summary>
-            Equalizer _equalizer = new Equalizer(sampleRate: SourceManager.OutputEngineOptions.SampleRate);
+            Equalizer30Band _equalizer = new Equalizer30Band(sampleRate: SourceManager.OutputEngineOptions.SampleRate);
 
-            _equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
-            _equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
-            _equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
-            _equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
-            _equalizer.SetBandGain(band: 4, frequency: 500, q: 1.4f, gainDB: -1.5f);  // 500 Hz Middle - Small cut for clearer vocals
-            _equalizer.SetBandGain(band: 5, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Upper mids - Slight emphasis for vocal presence
-            _equalizer.SetBandGain(band: 6, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence - Emphasis for details
-            _equalizer.SetBandGain(band: 7, frequency: 6000, q: 1.0f, gainDB: 0.3f);  // 6 kHz High mids - Adding airiness
-            _equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
-            _equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
+            //_equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
+            //_equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
+            //_equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
+            //_equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
+            //_equalizer.SetBandGain(band: 4, frequency: 500, q: 1.4f, gainDB: -1.5f);  // 500 Hz Middle - Small cut for clearer vocals
+            //_equalizer.SetBandGain(band: 5, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Upper mids - Slight emphasis for vocal presence
+            //_equalizer.SetBandGain(band: 6, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence - Emphasis for details
+            //_equalizer.SetBandGain(band: 7, frequency: 6000, q: 1.0f, gainDB: 0.3f);  // 6 kHz High mids - Adding airiness
+            //_equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
+            //_equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
+
+            // Sub-bass region
+            _equalizer.SetBandGain(band: 0, frequency: 20, q: 0.7f, gainDB: 0.5f);    // 20 Hz Deep sub-bass
+            _equalizer.SetBandGain(band: 1, frequency: 25, q: 0.7f, gainDB: 0.8f);    // 25 Hz Sub-bass foundation
+            _equalizer.SetBandGain(band: 2, frequency: 31, q: 0.7f, gainDB: 1.0f);    // 31 Hz Sub-bass body
+            _equalizer.SetBandGain(band: 3, frequency: 40, q: 0.7f, gainDB: 1.2f);    // 40 Hz Sub-bass warmth
+            _equalizer.SetBandGain(band: 4, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass emphasis
+            _equalizer.SetBandGain(band: 5, frequency: 63, q: 0.8f, gainDB: -0.8f);   // 63 Hz Low bass cleanup
+
+            // Bass region
+            _equalizer.SetBandGain(band: 6, frequency: 80, q: 0.9f, gainDB: 0.4f);    // 80 Hz Bass foundation
+            _equalizer.SetBandGain(band: 7, frequency: 100, q: 1.0f, gainDB: 0.6f);   // 100 Hz Bass body
+            _equalizer.SetBandGain(band: 8, frequency: 125, q: 1.0f, gainDB: 0.8f);   // 125 Hz Upper bass punch
+            _equalizer.SetBandGain(band: 9, frequency: 160, q: 1.1f, gainDB: 0.2f);   // 160 Hz Bass definition
+
+            // Low-mid region
+            _equalizer.SetBandGain(band: 10, frequency: 200, q: 1.2f, gainDB: -1.2f); // 200 Hz Low-mid mud cut
+            _equalizer.SetBandGain(band: 11, frequency: 250, q: 1.2f, gainDB: -2.0f); // 250 Hz Mud removal
+            _equalizer.SetBandGain(band: 12, frequency: 315, q: 1.3f, gainDB: -1.8f); // 315 Hz Boxiness cut
+            _equalizer.SetBandGain(band: 13, frequency: 400, q: 1.4f, gainDB: -1.6f); // 400 Hz Honkiness reduction
+            _equalizer.SetBandGain(band: 14, frequency: 500, q: 1.4f, gainDB: -1.5f); // 500 Hz Nasal frequency cut
+
+            // Mid region
+            _equalizer.SetBandGain(band: 15, frequency: 630, q: 1.3f, gainDB: -1.0f); // 630 Hz Mid clarity
+            _equalizer.SetBandGain(band: 16, frequency: 800, q: 1.2f, gainDB: -0.8f); // 800 Hz Mid balance
+            _equalizer.SetBandGain(band: 17, frequency: 1000, q: 1.1f, gainDB: -0.4f); // 1 kHz Vocal balance
+            _equalizer.SetBandGain(band: 18, frequency: 1250, q: 1.0f, gainDB: -0.2f); // 1.25 kHz Upper mid balance
+            _equalizer.SetBandGain(band: 19, frequency: 1600, q: 1.0f, gainDB: 0.0f);  // 1.6 kHz Neutral reference
+
+            // Upper-mid region
+            _equalizer.SetBandGain(band: 20, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Vocal presence
+            _equalizer.SetBandGain(band: 21, frequency: 2500, q: 1.1f, gainDB: 0.2f);  // 2.5 kHz Clarity boost
+            _equalizer.SetBandGain(band: 22, frequency: 3150, q: 1.2f, gainDB: 0.4f);  // 3.15 kHz Definition
+            _equalizer.SetBandGain(band: 23, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence boost
+            _equalizer.SetBandGain(band: 24, frequency: 5000, q: 1.1f, gainDB: 0.5f);  // 5 kHz Detail enhancement
+
+            // High region
+            _equalizer.SetBandGain(band: 25, frequency: 6300, q: 1.0f, gainDB: 0.4f);  // 6.3 kHz Airiness
+            _equalizer.SetBandGain(band: 26, frequency: 8000, q: 0.9f, gainDB: 0.6f);  // 8 kHz Sparkle
+            _equalizer.SetBandGain(band: 27, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Shimmer
+            _equalizer.SetBandGain(band: 28, frequency: 12500, q: 0.7f, gainDB: 0.9f); // 12.5 kHz Brilliance
+            _equalizer.SetBandGain(band: 29, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band
 
             AutoGain _autoGain = new AutoGain(AutoGainPreset.Music);
-
-            DynamicAmp _dynamicGain = new DynamicAmp(DynamicAmpPreset.Live);
-            _dynamicGain.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
 
             // Mastering compressor
             Compressor _compressor = new Compressor(CompressorPreset.MasteringLimiter);
@@ -463,17 +502,18 @@ namespace OwnaAvalonia.ViewModels
             // Mastering enhancer
             Enhancer _enhancer = new Enhancer(EnhancerPreset.RockEdge);
             _enhancer.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
+            _enhancer.Gain = 0.95f;
 
             //Dynamic amplification to ensure everything sounds the same volume (optimized for music mastering)
-            DynamicAmp _dynamicAmp = new DynamicAmp(DynamicAmpPreset.Music);
+            DynamicAmp _dynamicAmp = new DynamicAmp(DynamicAmpPreset.Live);
             _dynamicAmp.SampleRate = SourceManager.OutputEngineOptions.SampleRate;
-            _dynamicAmp.TargetLevel = -12.0f;
+            _dynamicAmp.TargetLevel = -20.0f;
 
-            Limiter _limiter = new Limiter(SourceManager.OutputEngineOptions.SampleRate, LimiterPreset.Live);
+            Limiter _limiter = new Limiter(SourceManager.OutputEngineOptions.SampleRate, LimiterPreset.Broadcast);
 
-            _Fxprocessor.AddFx(_dynamicGain);
+            //_Fxprocessor.AddFx(_autoGain);             
             _Fxprocessor.AddFx(_equalizer);
-            _Fxprocessor.AddFx(_enhancer);
+            //_Fxprocessor.AddFx(_enhancer);
             _Fxprocessor.AddFx(_compressor);
             _Fxprocessor.AddFx(_dynamicAmp);
 
