@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
-        xmlns:Visual="clr-namespace:Ownaudio.Utilities;assembly=Ownaudio"
+        xmlns:Visual="clr-namespace:OwnaudioLegacy.Utilities;assembly=OwnaudioNET"
 		xmlns:converter="using:OwnaAvalonia.Views.Converters"
         mc:Ignorable="d" d:DesignWidth="570" d:DesignHeight="900"
         Width="570" Height="900"

@@ -1,9 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
-
-using Ownaudio;
-using Ownaudio.Engines;
+using OwnaudioLegacy;
 using System.Diagnostics;
 
 namespace OwnaAvalonia
@@ -16,7 +14,7 @@ namespace OwnaAvalonia
         [STAThread]
         public static void Main(string[] args)
         {
-            OwnAudio.Initialize(OwnAudioEngine.EngineHostType.None);
+            OwnAudioEngine.Initialize();
 
             try
             {

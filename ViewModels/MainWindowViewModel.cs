@@ -3,16 +3,15 @@ using Avalonia.Threading;
 using OwnaAvalonia.Models;
 using OwnaAvalonia.Processor;
 using OwnaAvalonia.Views;
-using Ownaudio;
-using Ownaudio.Common;
-using Ownaudio.Engines;
-using Ownaudio.Fx;
-using Ownaudio.Sources;
+using OwnaudioLegacy.Common;
+using OwnaudioLegacy.Fx;
+using OwnaudioLegacy.Sources;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using OwnaudioNET;
 
 namespace OwnaAvalonia.ViewModels
 {
@@ -334,24 +333,24 @@ namespace OwnaAvalonia.ViewModels
         /// </summary>
         private void AudioEngineInitialize()
         {
-            AudioEngineOutputOptions _audioEngineOptions = new AudioEngineOutputOptions
-            (
-                device: OwnAudio.DefaultOutputDevice,
-                channels: OwnAudioEngine.EngineChannels.Stereo,
-                sampleRate: OwnAudio.DefaultOutputDevice.DefaultSampleRate,
-                latency: OwnAudio.DefaultOutputDevice.DefaultHighOutputLatency
-            );
+            //AudioEngineOutputOptions _audioEngineOptions = new AudioEngineOutputOptions
+            //(
+            //    device: OwnAudio.DefaultOutputDevice,
+            //    channels: OwnAudioEngine.EngineChannels.Stereo,
+            //    sampleRate: OwnAudio.DefaultOutputDevice.DefaultSampleRate,
+            //    latency: OwnAudio.DefaultOutputDevice.DefaultHighOutputLatency
+            //);
 
-            AudioEngineInputOptions _audioInputOptions = new AudioEngineInputOptions
-            (
-                device: OwnAudio.DefaultInputDevice,
-                channels: OwnAudioEngine.EngineChannels.Mono,
-                sampleRate: OwnAudio.DefaultInputDevice.DefaultSampleRate,
-                latency: OwnAudio.DefaultInputDevice.DefaultLowInputLatency
-            );
+            //AudioEngineInputOptions _audioInputOptions = new AudioEngineInputOptions
+            //(
+            //    device: OwnAudio.DefaultInputDevice,
+            //    channels: OwnAudioEngine.EngineChannels.Mono,
+            //    sampleRate: OwnAudio.DefaultInputDevice.DefaultSampleRate,
+            //    latency: OwnAudio.DefaultInputDevice.DefaultLowInputLatency
+            //);
 
-            SourceManager.OutputEngineOptions = _audioEngineOptions;
-            SourceManager.InputEngineOptions = _audioInputOptions;
+            //SourceManager.OutputEngineOptions = _audioEngineOptions;
+            //SourceManager.InputEngineOptions = _audioInputOptions;
             SourceManager.EngineFramesPerBuffer = 1024;
 
             _player = SourceManager.Instance;
@@ -364,14 +363,14 @@ namespace OwnaAvalonia.ViewModels
             _player.StateChanged += OnStateChanged;
             _player.PositionChanged += OnPositionChanged;
 
-            _isFFmpegInitialized = OwnAudio.IsFFmpegInitialized;
+            //_isFFmpegInitialized = OwnAudioEngine.IsFFmpegInitialized;
 
-            if (!_isFFmpegInitialized)
-            {
-                LogError($"Portaudio not initialize!");
-                LogError($"FFmpeg not found: {OwnAudio.LibraryPath}");
-                LogWarning("Audio engine and decoder: MINIAUDIO.");
-            }
+            //if (!_isFFmpegInitialized)
+            //{
+            //    LogError($"Portaudio not initialize!");
+            //    LogError($"FFmpeg not found: {OwnAudioEngine.LibraryPath}");
+            //    LogWarning("Audio engine and decoder: MINIAUDIO.");
+            //}
         }
 
         /// <summary>
@@ -440,58 +439,47 @@ namespace OwnaAvalonia.ViewModels
             /// </summary>
             Equalizer30Band _equalizer = new Equalizer30Band(sampleRate: SourceManager.OutputEngineOptions.SampleRate);
 
-            //_equalizer.SetBandGain(band: 0, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass - Slight emphasis on deep bass
-            //_equalizer.SetBandGain(band: 1, frequency: 60, q: 0.8f, gainDB: -1.0f);   // 60 Hz Low bass - Slight cut for cleaner sound
-            //_equalizer.SetBandGain(band: 2, frequency: 120, q: 1.0f, gainDB: 0.8f);   // 120 Hz Upper bass - Small emphasis for "punch"
-            //_equalizer.SetBandGain(band: 3, frequency: 250, q: 1.2f, gainDB: -2.0f);  // 250 Hz Low mids - Slight cut to avoid "muddy" sound
-            //_equalizer.SetBandGain(band: 4, frequency: 500, q: 1.4f, gainDB: -1.5f);  // 500 Hz Middle - Small cut for clearer vocals
-            //_equalizer.SetBandGain(band: 5, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Upper mids - Slight emphasis for vocal presence
-            //_equalizer.SetBandGain(band: 6, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence - Emphasis for details
-            //_equalizer.SetBandGain(band: 7, frequency: 6000, q: 1.0f, gainDB: 0.3f);  // 6 kHz High mids - Adding airiness
-            //_equalizer.SetBandGain(band: 8, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Highs - Shimmer
-            //_equalizer.SetBandGain(band: 9, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band - Extra brightness
+            // Sub-bass region (nagyon finom emelés az alappillérhez)
+            _equalizer.SetBandGain(band: 0, frequency: 20, q: 0.5f, gainDB: 0.1f);     // 20 Hz Deep sub-bass (Nagyon széles Q)
+            _equalizer.SetBandGain(band: 1, frequency: 25, q: 0.5f, gainDB: 0.2f);     // 25 Hz Sub-bass foundation
+            _equalizer.SetBandGain(band: 2, frequency: 31, q: 0.6f, gainDB: 0.3f);     // 31 Hz Sub-bass body
+            _equalizer.SetBandGain(band: 3, frequency: 40, q: 0.7f, gainDB: 0.4f);     // 40 Hz Sub-bass warmth
+            _equalizer.SetBandGain(band: 4, frequency: 50, q: 0.7f, gainDB: 0.4f);     // 50 Hz Sub-bass emphasis
+            _equalizer.SetBandGain(band: 5, frequency: 63, q: 0.7f, gainDB: -0.2f);   // 63 Hz Low bass cleanup (finom vágás)
 
-            // Sub-bass region
-            _equalizer.SetBandGain(band: 0, frequency: 20, q: 0.7f, gainDB: 0.5f);    // 20 Hz Deep sub-bass
-            _equalizer.SetBandGain(band: 1, frequency: 25, q: 0.7f, gainDB: 0.8f);    // 25 Hz Sub-bass foundation
-            _equalizer.SetBandGain(band: 2, frequency: 31, q: 0.7f, gainDB: 1.0f);    // 31 Hz Sub-bass body
-            _equalizer.SetBandGain(band: 3, frequency: 40, q: 0.7f, gainDB: 1.2f);    // 40 Hz Sub-bass warmth
-            _equalizer.SetBandGain(band: 4, frequency: 50, q: 0.7f, gainDB: 1.2f);    // 50 Hz Sub-bass emphasis
-            _equalizer.SetBandGain(band: 5, frequency: 63, q: 0.8f, gainDB: -0.8f);   // 63 Hz Low bass cleanup
+            // Bass region (finom emelés a teltségért)
+            _equalizer.SetBandGain(band: 6, frequency: 80, q: 0.8f, gainDB: 0.2f);     // 80 Hz Bass foundation
+            _equalizer.SetBandGain(band: 7, frequency: 100, q: 0.8f, gainDB: 0.3f);    // 100 Hz Bass body
+            _equalizer.SetBandGain(band: 8, frequency: 125, q: 0.9f, gainDB: 0.2f);    // 125 Hz Upper bass punch
+            _equalizer.SetBandGain(band: 9, frequency: 160, q: 0.9f, gainDB: 0.1f);    // 160 Hz Bass definition
 
-            // Bass region
-            _equalizer.SetBandGain(band: 6, frequency: 80, q: 0.9f, gainDB: 0.4f);    // 80 Hz Bass foundation
-            _equalizer.SetBandGain(band: 7, frequency: 100, q: 1.0f, gainDB: 0.6f);   // 100 Hz Bass body
-            _equalizer.SetBandGain(band: 8, frequency: 125, q: 1.0f, gainDB: 0.8f);   // 125 Hz Upper bass punch
-            _equalizer.SetBandGain(band: 9, frequency: 160, q: 1.1f, gainDB: 0.2f);   // 160 Hz Bass definition
+            // Low-mid region (finom vágás a "sár" és "dobozosság" ellen)
+            _equalizer.SetBandGain(band: 10, frequency: 200, q: 1.0f, gainDB: -0.3f); // 200 Hz Low-mid mud cut
+            _equalizer.SetBandGain(band: 11, frequency: 250, q: 1.0f, gainDB: -0.5f); // 250 Hz Mud removal
+            _equalizer.SetBandGain(band: 12, frequency: 315, q: 1.1f, gainDB: -0.4f); // 315 Hz Boxiness cut
+            _equalizer.SetBandGain(band: 13, frequency: 400, q: 1.1f, gainDB: -0.3f); // 400 Hz Honkiness reduction
+            _equalizer.SetBandGain(band: 14, frequency: 500, q: 1.0f, gainDB: -0.2f); // 500 Hz Nasal frequency cut
 
-            // Low-mid region
-            _equalizer.SetBandGain(band: 10, frequency: 200, q: 1.2f, gainDB: -1.2f); // 200 Hz Low-mid mud cut
-            _equalizer.SetBandGain(band: 11, frequency: 250, q: 1.2f, gainDB: -2.0f); // 250 Hz Mud removal
-            _equalizer.SetBandGain(band: 12, frequency: 315, q: 1.3f, gainDB: -1.8f); // 315 Hz Boxiness cut
-            _equalizer.SetBandGain(band: 13, frequency: 400, q: 1.4f, gainDB: -1.6f); // 400 Hz Honkiness reduction
-            _equalizer.SetBandGain(band: 14, frequency: 500, q: 1.4f, gainDB: -1.5f); // 500 Hz Nasal frequency cut
+            // Mid region (nagyrészt neutrális, finom kiegyenlítés)
+            _equalizer.SetBandGain(band: 15, frequency: 630, q: 1.0f, gainDB: -0.1f); // 630 Hz Mid clarity
+            _equalizer.SetBandGain(band: 16, frequency: 800, q: 1.0f, gainDB: 0.0f); // 800 Hz Mid balance (Neutrális)
+            _equalizer.SetBandGain(band: 17, frequency: 1000, q: 1.0f, gainDB: 0.0f); // 1 kHz Vocal balance (Neutrális)
+            _equalizer.SetBandGain(band: 18, frequency: 1250, q: 1.0f, gainDB: 0.0f); // 1.25 kHz Upper mid balance (Neutrális)
+            _equalizer.SetBandGain(band: 19, frequency: 1600, q: 1.0f, gainDB: 0.1f); // 1.6 kHz Neutral reference (minimális emelés)
 
-            // Mid region
-            _equalizer.SetBandGain(band: 15, frequency: 630, q: 1.3f, gainDB: -1.0f); // 630 Hz Mid clarity
-            _equalizer.SetBandGain(band: 16, frequency: 800, q: 1.2f, gainDB: -0.8f); // 800 Hz Mid balance
-            _equalizer.SetBandGain(band: 17, frequency: 1000, q: 1.1f, gainDB: -0.4f); // 1 kHz Vocal balance
-            _equalizer.SetBandGain(band: 18, frequency: 1250, q: 1.0f, gainDB: -0.2f); // 1.25 kHz Upper mid balance
-            _equalizer.SetBandGain(band: 19, frequency: 1600, q: 1.0f, gainDB: 0.0f);  // 1.6 kHz Neutral reference
+            // Upper-mid region (finom emelés a jelenlétért és tisztaságért)
+            _equalizer.SetBandGain(band: 20, frequency: 2000, q: 1.0f, gainDB: 0.2f); // 2 kHz Vocal presence
+            _equalizer.SetBandGain(band: 21, frequency: 2500, q: 0.9f, gainDB: 0.3f);  // 2.5 kHz Clarity boost
+            _equalizer.SetBandGain(band: 22, frequency: 3150, q: 0.9f, gainDB: 0.4f);  // 3.15 kHz Definition
+            _equalizer.SetBandGain(band: 23, frequency: 4000, q: 0.8f, gainDB: 0.3f);  // 4 kHz Presence boost
+            _equalizer.SetBandGain(band: 24, frequency: 5000, q: 0.7f, gainDB: 0.2f);  // 5 kHz Detail enhancement
 
-            // Upper-mid region
-            _equalizer.SetBandGain(band: 20, frequency: 2000, q: 1.0f, gainDB: -0.5f); // 2 kHz Vocal presence
-            _equalizer.SetBandGain(band: 21, frequency: 2500, q: 1.1f, gainDB: 0.2f);  // 2.5 kHz Clarity boost
-            _equalizer.SetBandGain(band: 22, frequency: 3150, q: 1.2f, gainDB: 0.4f);  // 3.15 kHz Definition
-            _equalizer.SetBandGain(band: 23, frequency: 4000, q: 1.2f, gainDB: 0.6f);  // 4 kHz Presence boost
-            _equalizer.SetBandGain(band: 24, frequency: 5000, q: 1.1f, gainDB: 0.5f);  // 5 kHz Detail enhancement
-
-            // High region
-            _equalizer.SetBandGain(band: 25, frequency: 6300, q: 1.0f, gainDB: 0.4f);  // 6.3 kHz Airiness
-            _equalizer.SetBandGain(band: 26, frequency: 8000, q: 0.9f, gainDB: 0.6f);  // 8 kHz Sparkle
-            _equalizer.SetBandGain(band: 27, frequency: 10000, q: 0.8f, gainDB: 0.8f); // 10 kHz Shimmer
-            _equalizer.SetBandGain(band: 28, frequency: 12500, q: 0.7f, gainDB: 0.9f); // 12.5 kHz Brilliance
-            _equalizer.SetBandGain(band: 29, frequency: 16000, q: 0.7f, gainDB: 0.8f); // 16 kHz Air band
+            // High region (széles sávú emelés a "levegősségért" és a "csillogásért")
+            _equalizer.SetBandGain(band: 25, frequency: 6300, q: 0.7f, gainDB: 0.2f);  // 6.3 kHz Airiness
+            _equalizer.SetBandGain(band: 26, frequency: 8000, q: 0.6f, gainDB: 0.4f);  // 8 kHz Sparkle
+            _equalizer.SetBandGain(band: 27, frequency: 10000, q: 0.6f, gainDB: 0.5f); // 10 kHz Shimmer
+            _equalizer.SetBandGain(band: 28, frequency: 12500, q: 0.5f, gainDB: 0.6f); // 12.5 kHz Brilliance
+            _equalizer.SetBandGain(band: 29, frequency: 16000, q: 0.5f, gainDB: 0.7f); // 16 kHz Air band
 
             AutoGain _autoGain = new AutoGain(AutoGainPreset.Music);
 
@@ -613,9 +601,6 @@ namespace OwnaAvalonia.ViewModels
 
                             if (_player is not null)
                             {
-                                if(OwnAudio.IsFFmpegInitialized)
-                                    MainWindow.Instance.waveformDisplay.LoadFromAudioFile(referenceFile, preferFFmpeg: true);
-                                else
                                     MainWindow.Instance.waveformDisplay.LoadFromAudioFile(referenceFile, preferFFmpeg: false);
                             }
 

@@ -13,16 +13,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.6" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.6" />
+    <PackageReference Include="Avalonia" Version="11.3.8" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.8" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.8" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.8" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.6" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.6" />
-    <PackageReference Include="Material.Avalonia" Version="3.13.1" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.8" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.8" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Material.Avalonia" Version="3.13.3" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
-    <PackageReference Include="OwnAudioSharp" Version="1.0.68" />
+    <PackageReference Include="OwnAudioSharp" Version="2.1.0" />
     <PackageReference Include="SukiUI" Version="6.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Melanchall.DryWetMidi">
+      <HintPath>..\..\..\Visualcode\DrywetMidi\DryWetMidi\bin\Release\net9.0\Melanchall.DryWetMidi.dll</HintPath>
+    </Reference>
+    <Reference Include="SoundTouch.Net">
+      <HintPath>..\..\..\Visualcode\Soundtouch\src\SoundTouch.Net\bin\Release\net9.0\SoundTouch.Net.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
